@@ -47,7 +47,6 @@ public class UserFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user, container, false);
 
-        title.setText(userName);
         stateTap = (TextView) view.findViewById(R.id.tv_tap);
         listView = (ListView) view.findViewById(R.id.lv_action);
         Intent intent = getActivity().getIntent();
