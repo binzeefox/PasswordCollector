@@ -1,4 +1,4 @@
-package com.binzeefox.passwordcollector.fragment;
+package com.binzeefox.passwordcollector;
 
 
 import android.app.AlertDialog;
@@ -11,10 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.binzeefox.passwordcollector.R;
-import com.binzeefox.passwordcollector.activity.InfoListActivity;
-import com.binzeefox.passwordcollector.activity.MainActivity;
-import com.binzeefox.passwordcollector.activity.UserActivity;
 import com.binzeefox.passwordcollector.db.Account;
 import com.binzeefox.passwordcollector.util.ListViewSelfAdjuster;
 import org.litepal.crud.DataSupport;
@@ -35,20 +31,25 @@ public class UserFragment extends Fragment {
     public static final int ACTION_BYADDINGDATE = 3;
     public static final int ACTION_BYEMAIL = 4;
     public static final int ACTION_BYPHONE = 5;
-    public static final int ACTION_SEARCH = 6;
-    public static final int ACTION_SHOWALL = 7;
+    public static final int ACTION_SHOWALL = 6;
+
+    // 宿主名
+    private static final int ONUSERACTIVITY = 0;
+    private static final int ONINFOLISTACTIVITY = 1;
+    private static final int ONACCOUNTINFOACTIVITY = 2;
 
     private TextView stateTap;
     private ListView listView;
     private List<String> dataList;
     private ArrayAdapter<String> adapter;
     private TextView title;
+    private RelativeLayout statusBar;
 
     public String userName;
     public String selected;
     public int action;
 
-    private boolean isOnUserActivity;
+    private int isAttachOn;
 
 
     @Override
@@ -57,15 +58,16 @@ public class UserFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user, container, false);
 
+        statusBar = (RelativeLayout) view.findViewById(R.id.statusBarLayout);
         stateTap = (TextView) view.findViewById(R.id.tv_tap);
         listView = (ListView) view.findViewById(R.id.lv_action);
         Intent intent = getActivity().getIntent();
-        userName = intent.getStringExtra("username");                                                            // 获取来自MainActivity的username
+        userName = intent.getStringExtra("userName");                                                            // 获取来自MainActivity的username
         title = (TextView) view.findViewById(R.id.tv_username_userfragment);
         title.setText(userName);
         dataList = new ArrayList<>();
         dataList.add("添加账户");
-        dataList.add("查找账户");
+        dataList.add("显示所有");
         dataList.add("按账户类别显示");
         dataList.add("按用户名显示");
         dataList.add("按添加日期显示");
@@ -78,15 +80,30 @@ public class UserFragment extends Fragment {
         ListViewSelfAdjuster adjuster = new ListViewSelfAdjuster();
         adjuster.setListViewHeightBasedOnChildren(listView);
 
+
+        /**
+         * 判断碎片宿主
+         */
         if (getActivity() instanceof UserActivity) {
-            isOnUserActivity = true;
-        // 宿主为UserActivity
+            isAttachOn = ONUSERACTIVITY;
+            // 宿主为UserActivity
         } else if (getActivity() instanceof InfoListActivity) {
-            isOnUserActivity = false;                                                                                   // 宿主为ShowInfoActivity
+            isAttachOn = ONINFOLISTACTIVITY;                                                                                   // 宿主为ShowInfoActivity
+        } else if (getActivity() instanceof AccountActivity) {
+            isAttachOn = ONACCOUNTINFOACTIVITY;
         }
 
         stateTap.setText("欢迎登陆");
+
+        if (isAttachOn != ONUSERACTIVITY) {
+            stateTap.setVisibility(View.GONE);
+            statusBar.setVisibility(View.GONE);
+            title.setVisibility(View.GONE);
+        }
+
         return view;
+
+
     }
 
 
@@ -100,76 +117,75 @@ public class UserFragment extends Fragment {
                 selected = dataList.get(i);
 
 
-
                 switch (selected) {
                     case "添加账户":
                         // 添加账户算法
                         action = ACTION_ADDACOUNT;
-                        if (isOnUserActivity) {
-                            Intent intent = new Intent(getActivity(), InfoListActivity.class);
-                            intent.putExtra("action", action);
-                            startActivity(intent);
-                        }
+                        Intent intent = new Intent(getActivity(), AccountActivity.class);
+                        intent.putExtra("action", action);
+                        intent.putExtra("userName", userName);
+                        startActivity(intent);
+                        getActivity().finish();
                         break;
 
-                    case "查找账户":
-                        // 查找账户算法
-                        action = ACTION_SEARCH;
-                        if (isOnUserActivity) {
-                            Intent intent = new Intent(getActivity(),InfoListActivity.class);
-                            intent.putExtra("action",action);
-                            startActivity(intent);
-                        }
+                    case "显示所有":
+                        // 添加显示所有算法
+                        action = ACTION_SHOWALL;
+                        intent = new Intent(getActivity(),InfoListActivity.class);
+                        intent.putExtra("action",action);
+                        intent.putExtra("userName",userName);
+                        startActivity(intent);
+                        getActivity().finish();
                         break;
 
                     case "按账户类别显示":
                         // 显示账户类别算法
                         action = ACTION_BYACCOUNT;
-                        if (isOnUserActivity) {
-                            Intent intent = new Intent(getActivity(),InfoListActivity.class);
-                            intent.putExtra("action",action);
-                            startActivity(intent);
-                        }
+                        intent = new Intent(getActivity(), InfoListActivity.class);
+                        intent.putExtra("action", action);
+                        intent.putExtra("userName", userName);
+                        startActivity(intent);
+                        getActivity().finish();
                         break;
 
                     case "按用户名显示":
                         // 显示用户名
                         action = ACTION_BYUSERNAME;
-                        if (isOnUserActivity) {
-                            Intent intent = new Intent(getActivity(),InfoListActivity.class);
-                            intent.putExtra("action", action);
-                            startActivity(intent);
-                        }
+                        intent = new Intent(getActivity(), InfoListActivity.class);
+                        intent.putExtra("action", action);
+                        intent.putExtra("userName", userName);
+                        startActivity(intent);
+                        getActivity().finish();
                         break;
 
                     case "按添加日期显示":
                         // 显示添加日期
                         action = ACTION_BYADDINGDATE;
-                        if (isOnUserActivity) {
-                            Intent intent = new Intent(getActivity(), InfoListActivity.class);
-                            intent.putExtra("action",action);
-                            startActivity(intent);
-                        }
+                        intent = new Intent(getActivity(), InfoListActivity.class);
+                        intent.putExtra("action", action);
+                        intent.putExtra("userName", userName);
+                        startActivity(intent);
+                        getActivity().finish();
                         break;
 
                     case "按邮箱显示":
                         // 显示注册邮箱列表
                         action = ACTION_BYEMAIL;
-                        if (isOnUserActivity) {
-                            Intent intent = new Intent(getActivity(), InfoListActivity.class);
-                            intent.putExtra("action",action);
-                            startActivity(intent);
-                        }
+                        intent = new Intent(getActivity(), InfoListActivity.class);
+                        intent.putExtra("action", action);
+                        intent.putExtra("userName", userName);
+                        startActivity(intent);
+                        getActivity().finish();
                         break;
 
                     case "按电话显示":
                         // 显示电话号码列表
                         action = ACTION_BYPHONE;
-                        if (isOnUserActivity) {
-                            Intent intent = new Intent(getActivity(),InfoListActivity.class);
-                            intent.putExtra("action",action);
-                            startActivity(intent);
-                        }
+                        intent = new Intent(getActivity(), InfoListActivity.class);
+                        intent.putExtra("action", action);
+                        intent.putExtra("userName", userName);
+                        startActivity(intent);
+                        getActivity().finish();
                         break;
 
                     case "！清除信息！":
@@ -186,10 +202,10 @@ public class UserFragment extends Fragment {
                         dialog.setPositiveButton("没错", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                DataSupport.deleteAll(Account.class,"userName = ? ", userName);
-                                Intent intent = new Intent(getActivity(),UserActivity.class);
+                                DataSupport.deleteAll(Account.class, "userName = ? ", userName);
+                                Intent intent = new Intent(getActivity(), UserActivity.class);
                                 startActivity(intent);
-                                Toast.makeText(getActivity(),"已经清除所有账户信息",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "已经清除所有账户信息", Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -197,15 +213,15 @@ public class UserFragment extends Fragment {
 
                     case "登出":
                         // 登出操作
-                        String fromWhere;
-                        Intent intent= new Intent(getActivity(),MainActivity.class);
+                        intent = new Intent(getActivity(), MainActivity.class);
                         startActivity(intent);
                         getActivity().finish();
-                        Toast.makeText(getActivity(),"登出成功",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "登出成功", Toast.LENGTH_SHORT).show();
                         break;
                     default:
                         break;
                 }
+
 
             }
         });

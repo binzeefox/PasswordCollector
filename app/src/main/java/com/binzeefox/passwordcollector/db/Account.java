@@ -7,14 +7,15 @@ import org.litepal.crud.DataSupport;
  */
 public class Account extends DataSupport{
 
-    private int id;
-    private String userName;
-    private String accountName;
-    private String accountID;
-    private String accountPassword;
-    private String createDate;
-    private String userEmail;
-    private int userPhone;
+    private int id;                                                                                                     // 主键
+    private String userName;                                                                                            // 用户名
+    private String accountType;
+    private String accountName;                                                                                         // 账户名
+    private String comment;
+    private String accountPassword;                                                                                     // 账户密码
+    private String createDate;                                                                                          // 创建日期
+    private String userEmail;                                                                                           // 注册邮箱
+    private String userPhone;                                                                                              // 绑定电话
 
     public int getId() {
         return id;
@@ -22,6 +23,14 @@ public class Account extends DataSupport{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
     }
 
     public String getAccountName() {
@@ -32,12 +41,12 @@ public class Account extends DataSupport{
         this.accountName = accountName;
     }
 
-    public String getAccountID() {
-        return accountID;
+    public String getComment() {
+        return comment;
     }
 
-    public void setAccountID(String accountID) {
-        this.accountID = accountID;
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public String getAccountPassword() {
@@ -72,11 +81,11 @@ public class Account extends DataSupport{
         this.userEmail = userEmail;
     }
 
-    public int getUserPhone() {
+    public String getUserPhone() {
         return userPhone;
     }
 
-    public void setUserPhone(int userPhone) {
+    public void setUserPhone(String userPhone) {
         this.userPhone = userPhone;
     }
 }

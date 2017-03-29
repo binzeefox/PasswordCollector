@@ -4,11 +4,11 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.binzeefox.passwordcollector.activity.UserActivity">
+        tools:context="com.binzeefox.passwordcollector.UserActivity">
 
     <fragment
             android:id="@+id/user_fragment"
-            android:name="com.binzeefox.passwordcollector.fragment.UserFragment"
+            android:name="com.binzeefox.passwordcollector.UserFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:layout="@layout/fragment_user"/>

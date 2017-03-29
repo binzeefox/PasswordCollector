@@ -10,7 +10,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity
-                android:name=".activity.MainActivity"
+                android:name=".MainActivity"
                 android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -18,10 +18,13 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activity.UserActivity">
+        <activity android:name=".UserActivity">
         </activity>
-        <activity android:name=".activity.InfoListActivity">
+        <activity android:name=".InfoListActivity">
         </activity>
+        <activity android:name=".AccountActivity">
+        </activity>
+
     </application>
 
 </manifest>

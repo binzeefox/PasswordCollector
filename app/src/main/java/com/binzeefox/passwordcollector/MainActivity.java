@@ -1,5 +1,5 @@
 
-package com.binzeefox.passwordcollector.activity;
+package com.binzeefox.passwordcollector;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -18,18 +18,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.binzeefox.passwordcollector.R;
 import com.binzeefox.passwordcollector.db.Account;
 import com.binzeefox.passwordcollector.db.User;
+import com.binzeefox.passwordcollector.util.ToastUtil;
 import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 
 import java.util.List;
 
 /**
- * 无法开启UserActivity
- * 无法保存用户名
- * EditText 焦点问题
+ *
  */
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -43,6 +41,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button bt_ontop;
     private Button bt_oncenter;
     private Button bt_onbotton;
+
+//    private SharedPreferences last = getSharedPreferences("last login",0);
+
 
     /**
      * pin = LOGIN ：登陆界面
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         SharedPreferences pref = getSharedPreferences("last login",MODE_PRIVATE);
-        user_lastlog = pref.getString("username_last","");
+        user_lastlog = pref.getString("userName_last","");
 
 
         title_toobar = (TextView) findViewById(R.id.tv_title);
@@ -211,14 +212,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if ("".equals(ed_userName.getText())) {
-            Toast.makeText(this, "用户名不能为空", Toast.LENGTH_SHORT).show();
+            ToastUtil.showToast(this,"用户名不能为空");
             ed_userName.setText("");
         } else if (mCompare == true) {
-            Toast.makeText(this, "该用户名已存在", Toast.LENGTH_SHORT).show();
+            ToastUtil.showToast(this,"该用户名已经存在");
         } else if (ed_password == null) {
-            Toast.makeText(this, "请输入密码", Toast.LENGTH_SHORT).show();
+            ToastUtil.showToast(this,"请输入密码");
         } else if (!ed_password.getText().toString().equals(ed_passConfirm.getText().toString())) {
-            Toast.makeText(this, "请保证重复密码与密码相同", Toast.LENGTH_SHORT).show();
+            ToastUtil.showToast(this,"密码与重复密码不一致");
             ed_password.setText("");
             ed_passConfirm.setText("");
         } else {
@@ -230,7 +231,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             pin = LOGIN;
             ed_passConfirm.setText("");
             ed_password.setText("");
-            Toast.makeText(this, "注册成功", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "注册成功", Toast.LENGTH_SHORT).show();
+            ToastUtil.showToast(this,"注册成功");
         }
     }
 
@@ -254,26 +256,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 nameCompare = true;
             }
         if ("".equals(ed_userName.getText().toString())) {
-            Toast.makeText(this, "请输入用户名", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "请输入用户名", Toast.LENGTH_SHORT).show();
+            ToastUtil.showToast(this,"请输入用户名");
 
         } else if (!nameCompare) {
-            Toast.makeText(this, "该账号未注册", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "该账号未注册", Toast.LENGTH_SHORT).show();
+            ToastUtil.showToast(this,"该账号未注册");
         } else if (mCompare) {
             Intent intent = new Intent(MainActivity.this, UserActivity.class);
-            intent.putExtra("username", ed_userName.getText().toString());
-            SharedPreferences.Editor editor = getSharedPreferences("last login",MODE_PRIVATE).edit();
+            intent.putExtra("userName", ed_userName.getText().toString());
+            SharedPreferences last = getSharedPreferences("last login",0);
+            SharedPreferences.Editor editor = last.edit();
             editor.clear();
-            editor.putString("username_last",ed_userName.getText().toString());
+            editor.putString("userName_last",ed_userName.getText().toString());
             editor.apply();
+            startActivity(intent);
+
             ed_userName.setText("");
             ed_password.setText("");
             ed_password.setText("");
-
-            startActivity(intent);
             finish();
-            Toast.makeText(this, "欢迎登陆，用户 \0" + name, Toast.LENGTH_SHORT).show();
+            ToastUtil.showToast(this,"欢迎登陆，用户 \0" + name);
         } else {
-            Toast.makeText(this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
+            ToastUtil.showToast(this,"用户名或密码错误");
         }
 
     }
@@ -303,16 +308,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void onClick(DialogInterface dialogInterface, int i) {
                         DataSupport.deleteAll(User.class);
                         DataSupport.deleteAll(Account.class);
+                        SharedPreferences last = getSharedPreferences("last login",0);
+                        SharedPreferences.Editor editor = last.edit();
+                        editor.clear();
+                        editor.commit();
+
+                        logview();
                         ed_userName.setText("");
                         ed_password.setText("");
                         ed_passConfirm.setText("");
-                        logview();
-                        Toast.makeText(MainActivity.this, "已清除所有数据", Toast.LENGTH_SHORT).show();
+                        ed_userName.requestFocus();
+
+                        ToastUtil.showToast(MainActivity.this,"已清除所有数据");
+
                     }
                 });
                 dialogDbclean.show();
-                List<User> users = DataSupport.findAll(User.class);
-                List<Account> accounts = DataSupport.findAll(Account.class);
+//                List<User> users = DataSupport.findAll(User.class);
+//                List<Account> accounts = DataSupport.findAll(Account.class);
                 break;
 
             case R.id.about_menu:

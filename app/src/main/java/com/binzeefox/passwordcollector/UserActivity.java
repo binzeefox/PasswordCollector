@@ -1,4 +1,4 @@
-package com.binzeefox.passwordcollector.activity;
+package com.binzeefox.passwordcollector;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -6,19 +6,17 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
-import com.binzeefox.passwordcollector.R;
 import com.binzeefox.passwordcollector.db.Account;
-import com.binzeefox.passwordcollector.fragment.UserFragment;
+import com.binzeefox.passwordcollector.db.User;
 import org.litepal.crud.DataSupport;
 
 import java.util.List;
-import java.util.Objects;
 
 public class UserActivity extends AppCompatActivity {
 
-    private boolean isEverLogin;
-
+// TODO 添加该页recyclerList的点击事件
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -37,20 +35,30 @@ public class UserActivity extends AppCompatActivity {
         UserFragment fragment = (UserFragment) getSupportFragmentManager().findFragmentById(R.id.user_fragment);
         String userName = fragment.userName;
 
-        List<Account> list = DataSupport.findAll(Account.class);
-        for (Account account: list){
-            if (Objects.equals(account.getUserName(), userName)){
-                isEverLogin = true;
-            }
-        }
-        if (isEverLogin ){
+        List<Account> list = DataSupport.where("userName = ?", userName).find(Account.class);
+
+
+
+        if (!list.isEmpty()) {
             int action = UserFragment.ACTION_SHOWALL;
-            Intent intent = new Intent(UserActivity.this,InfoListActivity.class);
-            intent.putExtra("action",action);
+            Intent intent = new Intent(UserActivity.this, InfoListActivity.class);
+            intent.putExtra("userName",fragment.userName);
+            intent.putExtra("action", action);
             startActivity(intent);
         }
 
 
 
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            //TODO something
+            Intent intent = new Intent(UserActivity.this,MainActivity.class);
+            startActivity(intent);
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
