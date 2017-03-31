@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -92,7 +93,6 @@ public class InfoListActivity extends AppCompatActivity {
         }
 
 
-
     }
 
             /**
@@ -120,6 +120,7 @@ public class InfoListActivity extends AppCompatActivity {
                     infoItem.setTitle(account.getAccountType());
                     infoItem.setMessage("ID:" + account.getAccountName());
                     infoItemList.add(infoItem);
+                    Log.d("Password",account.getAccountPassword());
                 }
                 break;
             case ACTION_BYACCOUNT:
@@ -244,5 +245,9 @@ public class InfoListActivity extends AppCompatActivity {
     protected void onPostResume() {
         super.onPostResume();
         drawer.closeDrawer(GravityCompat.START);
+    }
+
+    public void listListener(String select){
+
     }
 }
